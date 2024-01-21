@@ -13,18 +13,21 @@ jobs:
     - name: Checkout del código fuente
       uses: actions/checkout@v2
 
-    - name: Configurar Node.js y Yarn
+    - name: Configurar Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        registry-url: 'https://registry.npmjs.org/'
-      - run: npm install -g yarn
-      - run: yarn install
+
+    - name: Instalar yarn
+      run: npm install -g yarn
+
+    - name: Instalar dependencias
+      run: yarn
 
     - name: Iniciar sesión en npm
       run: npm login --registry=https://registry.npmjs.org/ --scope=@fone01
 
-    - name: Publicar en npm usando Yarn
+    - name: Publicar en npm
       run: yarn publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
