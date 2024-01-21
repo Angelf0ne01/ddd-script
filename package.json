@@ -10,6 +10,9 @@
     "copy-templates": "ncp src/templates dist/templates",
     "build": "tsc"
   },
+  "bin": {
+    "ddd-script": "dist/index.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
