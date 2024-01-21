@@ -8,12 +8,21 @@ import _ from "lodash";
 
 const program = new Command();
 
+type UsesCasesTypes = "create" | "delete" | "find-one" | "find-all" | "update";
+type ControllerTypes = "http" | "graphql";
+type InfraestructuresTypes = "mongo" | "typeorm";
 interface Menu {
   moduleName: string;
-  useCases: string[];
-  controllers: string[];
-  infrastructure: string[];
+  useCases: UsesCasesTypes[];
+  controllers: ControllerTypes[];
+  infrastructure: InfraestructuresTypes[];
 }
+
+const MenuCases = {
+  useCases: ["create", "delete", "find-one", "find-all", "update"],
+  controllers: ["http", "graphql"],
+  infrastructure: ["mongo", "typeorm"],
+};
 
 program
   .name("DDD Create Script")
@@ -31,19 +40,19 @@ program
           type: "checkbox",
           name: "useCases",
           message: "Paso 2: Selecciona los casos de uso a utilizar",
-          choices: ["create", "delete", "find-one", "find-all", "update"],
+          choices: MenuCases.useCases,
         },
         {
           type: "checkbox",
           name: "controllers",
           message: "Paso 3: Selecciona controladores a utilizar",
-          choices: ["http", "graphql"],
+          choices: MenuCases.controllers,
         },
         {
           type: "checkbox",
           name: "infrastructure",
           message: "Paso 4: Selecciona la infraestructura",
-          choices: ["mongo", "typeorm"],
+          choices: MenuCases.infrastructure,
         },
       ])
       .then((answers) => main(answers))
@@ -139,23 +148,30 @@ async function getTemplate(): Promise<string[]> {
   return await getFilesRecursively(templatesPath);
 }
 
-function filterTemplatse(
-  projectType: string,
-  paths: string[],
-  cases: string[]
-): string[] {
-  let filterPath: string[] = [];
+interface MenuCases {
+  useCases: string[];
+  controllers: string[];
+  infrastructure: string[];
+}
+function getFilterNotSelected(cases: MenuCases) {
+  const allCases: string[] = [];
+  const currentCases: string[] = [];
 
-  const pathFilters = paths.filter((path) => path.includes(projectType));
-
-  for (const useCase of pathFilters) {
-    for (const path of paths) {
-      if (path.includes(useCase)) {
-        filterPath.push(path);
-      }
-    }
+  for (const key of Object.keys(MenuCases)) {
+    //@ts-ignore
+    allCases.push(...MenuCases[key]);
   }
-  return filterPath;
+
+  for (const key of Object.keys(cases)) {
+    //@ts-ignore
+    currentCases.push(...cases[key]);
+  }
+
+  return allCases.filter((value) => !currentCases.includes(value));
+}
+
+function filterTemplate(paths: string[], cases: string[]): string[] {
+  return paths.filter((path) => !cases.some((filter) => path.includes(filter)));
 }
 
 interface Template {
@@ -169,18 +185,27 @@ function createTemplate(
   modelNameUpperCamelCase: string,
   modelNameUpperSnakeCase: string,
   modelNameCamelCase: string,
-  modelNameSnakeLowerCase: string
+  modelNameSnakeLowerCase: string,
+  useCases: string[]
 ): Template[] {
   let templates: Template[] = [];
   for (const templatePath of templatesPaths) {
     const templateContent = fs.readFileSync(templatePath, "utf-8");
-    const renderedContent = ejs.render(templateContent, {
+
+    const params = {
       modelNameSnakeCase,
       modelNameUpperCamelCase,
       modelNameUpperSnakeCase,
       modelNameCamelCase,
       modelNameSnakeLowerCase,
-    });
+      create: useCases.includes("create"),
+      findOne: useCases.includes("find-one"),
+      findAll: useCases.includes("find-all"),
+      update: useCases.includes("update"),
+      deleted: useCases.includes("deleted"),
+    };
+
+    const renderedContent = ejs.render(templateContent, params);
     templates.push({
       content: renderedContent,
       path: templatePath,
@@ -202,7 +227,6 @@ async function main(menu: Menu) {
   const { moduleName, useCases, controllers, infrastructure } = menu;
   const { singular, plural } = getSingularAndPlural(moduleName);
   const singularModule = singular;
-  const pluralModule = plural;
 
   const {
     snakeCase,
@@ -212,38 +236,29 @@ async function main(menu: Menu) {
     snakeLowerCase,
   } = transformText(singularModule);
 
+  const filters = getFilterNotSelected({
+    useCases,
+    controllers,
+    infrastructure,
+  });
   //obtengo los templates
   const templates = await getTemplate();
   //filtros
-  const filterTemplatesController = filterTemplatse(
-    "api",
-    templates,
-    controllers
-  );
-  const filterTemplatesBoundendContext = filterTemplatse(
-    "shared",
-    templates,
-    useCases
-  );
-  console.log;
+  const filterTemplatesController = filterTemplate(templates, filters);
+
+  //crear template
+
   const templateApi = createTemplate(
     filterTemplatesController,
     snakeCase,
     upperCamelCase,
     upperSnakeCase,
     camelCase,
-    snakeLowerCase
-  );
-  const templateShared = createTemplate(
-    filterTemplatesBoundendContext,
-    snakeCase,
-    upperCamelCase,
-    upperSnakeCase,
-    camelCase,
-    snakeLowerCase
+    snakeLowerCase,
+    useCases
   );
 
-  [...templateApi, ...templateShared].map((template) => {
+  [...templateApi].map((template) => {
     const outputPath = getOutputPath(template.path, snakeCase);
     fsExtra.ensureDirSync(path.dirname(outputPath));
     fsExtra.writeFileSync(outputPath, template.content);

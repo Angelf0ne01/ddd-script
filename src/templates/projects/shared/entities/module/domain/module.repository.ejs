@@ -1,0 +1,11 @@
+<% if (findOne) { %>import { Nulleable } from '@shared/common/domain/base-entity';<% } %>
+import { <%= modelNameUpperCamelCase%> } from './<%= modelNameSnakeCase %>';
+<% if (findOne) { %>import { <%= modelNameUpperCamelCase%>Id } from './value-object';<% } %>
+
+export interface <%= modelNameUpperCamelCase%>Repository {
+<% if (create) { %>save(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void>;<% } %>
+<% if (findOne) { %>findOneById(<%= modelNameCamelCase %>Id: <%= modelNameUpperCamelCase%>Id): Promise<Nulleable<<%= modelNameUpperCamelCase%>>>;<% } %>
+<% if (findAll) { %>findAll():Promise<<%= modelNameUpperCamelCase%>>;<% } %>
+<% if (update) { %>update(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void>;<% } %>
+<% if (deleted) { %>delete(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void>;<% } %>
+}
