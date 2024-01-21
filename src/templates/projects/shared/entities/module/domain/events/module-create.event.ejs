@@ -1,0 +1,18 @@
+import { DomainEvent } from "@shared/common/domain/domain-event";
+
+export class <%= modelNameUpperCamelCase%>CreateEvent extends DomainEvent {
+  static readonly EVENT_NAME: string =
+    "company_name.service_name.1.event.<%= modelNameSnakeCase %>.created";
+  toPrimitives() {
+    return {
+      id: this.id,
+    };
+  }
+  constructor(readonly id: string) {
+    super({
+      eventName: <%= modelNameUpperCamelCase%>CreateEvent.EVENT_NAME,
+      aggregateId: id,
+      occurredOn: new Date(),
+    });
+  }
+}

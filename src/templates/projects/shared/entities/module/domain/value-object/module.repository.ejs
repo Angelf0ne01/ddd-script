@@ -1,0 +1,11 @@
+import { Nulleable } from '@shared/common/domain/base-entity';
+import { <%= modelNameUpperCamelCase%> } from './<%= modelNameSnakeCase %>';
+import { <%= modelNameUpperCamelCase%>Id } from './value-object';
+
+export interface <%= modelNameUpperCamelCase%>Repository {
+  save(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void>;
+  findOneById(<%= modelNameCamelCase %>Id: <%= modelNameUpperCamelCase%>Id): Promise<Nulleable<<%= modelNameUpperCamelCase%>>>;
+  findAll():Promise<<%= modelNameUpperCamelCase%>>
+  update(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void>;
+  delete(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void>;
+}

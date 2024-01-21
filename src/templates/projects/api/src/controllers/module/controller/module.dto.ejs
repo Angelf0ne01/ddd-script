@@ -1,0 +1,72 @@
+import { BaseDTO } from '@api/core/dtos/base.dto';
+import {
+  Directive,
+  Field,
+  ID,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  Allow,
+  IsArray,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+
+
+
+export enum <%= modelNameUpperSnakeCase%>_ERROR_MAPPER {
+  NOT_FOUND = '<%= modelNameSnakeCase %>.not-found',
+  BAD_REQUEST = '<%= modelNameSnakeCase %>.bad-request',
+  INTERNAL_SERVER_ERROR = '<%= modelNameSnakeCase %>.internal-server-error',
+}
+
+@ObjectType()
+@Directive('@key(fields: "id")')
+export class <%= modelNameUpperCamelCase%>DTO {
+  @Field(() => ID)
+  @ApiProperty({ type: String })
+  @IsUUID()
+  id!: string;
+
+}
+
+export class <%= modelNameUpperCamelCase%>ApiResponse extends BaseDTO<<%= modelNameUpperCamelCase%>DTO> {
+  @ApiPropertyOptional({ type: <%= modelNameUpperCamelCase%>DTO })
+  @IsOptional()
+  @Type(() => <%= modelNameUpperCamelCase%>DTO)
+  @Allow()
+  data?: <%= modelNameUpperCamelCase%>DTO;
+
+  @ApiPropertyOptional()
+  @Allow()
+  @IsOptional()
+  error?: string;
+}
+
+export class <%= modelNameUpperCamelCase%>ListApiResponse extends BaseDTO<<%= modelNameUpperCamelCase%>DTO[]> {
+  @ApiPropertyOptional({ type: <%= modelNameUpperCamelCase%>DTO, isArray: true })
+  @IsArray()
+  @IsOptional()
+  @Type(() => <%= modelNameUpperCamelCase%>DTO)
+  data?: <%= modelNameUpperCamelCase%>DTO[];
+
+  @ApiPropertyOptional()
+  @Allow()
+  @IsOptional()
+  error?: string;
+}
+
+@InputType()
+export class Create<%= modelNameUpperCamelCase%>DTO {
+  @Field(() => ID)
+  @ApiProperty({ type: String })
+  @IsUUID()
+  id!: string;
+
+}

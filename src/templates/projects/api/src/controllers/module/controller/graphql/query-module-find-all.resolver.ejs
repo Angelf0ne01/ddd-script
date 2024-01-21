@@ -1,0 +1,13 @@
+import { Query, Resolver } from '@nestjs/graphql';
+import { <%= modelNameUpperCamelCase %>FindAllService } from '@shared/entities/<%= modelNameSnakeCase %>/application/<%= modelNameSnakeCase %>-find-all.service';
+import { <%= modelNameUpperCamelCase %>DTO } from '../<%= modelNameSnakeCase %>.dto';
+
+@Resolver(() => <%= modelNameUpperCamelCase %>DTO)
+export class Query<%= modelNameUpperCamelCase %>FindAll {
+  constructor(private  <%= modelNameSnakeCase %>FindAllService: <%= modelNameUpperCamelCase %>FindAllService) {}
+
+  @Query(() => [<%= modelNameUpperCamelCase %>DTO])
+  public async  <%= modelNameSnakeCase %>(): Promise<<%= modelNameUpperCamelCase %>DTO[]> {
+    return await this. <%= modelNameSnakeCase %>FindAllService.run();
+  }
+}

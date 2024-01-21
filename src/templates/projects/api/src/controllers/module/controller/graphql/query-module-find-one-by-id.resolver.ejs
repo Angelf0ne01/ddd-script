@@ -1,0 +1,26 @@
+import { Args, Query, Resolver } from '@nestjs/graphql';
+import { <%= modelNameUpperCamelCase %>FindByIdService } from '@shared/entities/<%= modelNameSnakeCase %>/application/<%= modelNameSnakeCase %>-find-one-by-id.service';
+import { <%= modelNameUpperCamelCase %>NotExist } from '@shared/entities/<%= modelNameSnakeCase %>/domain/exceptions/<%= modelNameSnakeCase %>-not-exist';
+import { GraphQLError } from 'graphql';
+import { <%= modelNameUpperCamelCase %>DTO, <%= modelNameUpperSnakeCase %>_ERROR_MAPPER } from '../<%= modelNameSnakeCase %>.dto';
+
+@Resolver(() => <%= modelNameUpperCamelCase %>DTO)
+export class Query<%= modelNameUpperCamelCase %>FindOneById {
+  constructor(private <%= modelNameSnakeCase %>FindByIdService: <%= modelNameUpperCamelCase %>FindByIdService) {}
+
+  @Query(() => <%= modelNameUpperCamelCase %>DTO)
+  public async <%= modelNameSnakeCase %>FindOneById(
+    @Args('id')
+    id: string,
+  ): Promise<<%= modelNameUpperCamelCase %>DTO> {
+    try {
+      return await this.<%= modelNameSnakeCase %>FindByIdService.run(id);
+    } catch (error) {
+      if (error instanceof <%= modelNameUpperCamelCase %>NotExist) {
+        throw new GraphQLError(error.message);
+      }
+
+      throw new GraphQLError(<%= modelNameUpperSnakeCase %>_ERROR_MAPPER.NOT_FOUND);
+    }
+  }
+}

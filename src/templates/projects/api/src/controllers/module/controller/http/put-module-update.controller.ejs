@@ -1,0 +1,74 @@
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Put,
+} from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { <%= modelNameUpperCamelCase%>UpdateService } from '@shared/entities/<%= modelNameSnakeCase %>/application/<%= modelNameSnakeCase %>-update.service';
+import { <%= modelNameUpperCamelCase%>NotExist } from '@shared/entities/<%= modelNameSnakeCase %>/domain/exceptions/<%= modelNameSnakeCase %>-not-exist';
+import {
+  <%= modelNameUpperCamelCase%>ApiResponse,
+  <%= modelNameUpperCamelCase%>DTO,
+  <%= modelNameUpperSnakeCase%>_ERROR_MAPPER,
+} from '../<%= modelNameSnakeCase %>.dto';
+
+@ApiTags('<%= modelNameSnakeCase %>')
+@Controller('/<%= modelNameSnakeCase %>')
+export class Put<%= modelNameUpperCamelCase%>UpdateController {
+  constructor(
+    private readonly <%= modelNameCamelCase %>UpdateService: <%= modelNameUpperCamelCase%>UpdateService,
+  ) {}
+
+  @Put()
+  @ApiCreatedResponse({
+    description: 'update a <%= modelNameSnakeCase %>,
+    status: 201,
+  })
+  @ApiOkResponse({
+    description: 'get a <%= modelNameSnakeCase %>',
+    type: <%= modelNameUpperCamelCase%>ApiResponse,
+  })
+  @ApiNotFoundResponse({
+    description: <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.NOT_FOUND,
+    schema: {
+      type: 'object',
+      example: {
+        data: undefined,
+        error: <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.NOT_FOUND,
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    description: <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.INTERNAL_SERVER_ERROR,
+    schema: {
+      type: 'object',
+      example: {
+        data: undefined,
+        error: <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.INTERNAL_SERVER_ERROR,
+      },
+    },
+  })
+  public async putUpdate<%= modelNameUpperCamelCase%>(
+    @Body() <%= modelNameCamelCase %>: Partial<<%= modelNameUpperCamelCase%>DTO>,
+  ): Promise<void> {
+    try {
+      await this.<%= modelNameCamelCase %>UpdateService.run(<%= modelNameCamelCase %>);
+    } catch (error) {
+      if (error instanceof <%= modelNameUpperCamelCase%>NotExist) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+}

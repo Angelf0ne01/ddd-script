@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "NodeNext",
     "types": ["node", "commander"],
     "strict": true,
+    "module": "NodeNext",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "lib": ["ES2021"],
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "include": ["src/**/*.ts", "src/**/**/*.ejs"]
 }

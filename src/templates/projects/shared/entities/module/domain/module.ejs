@@ -1,0 +1,56 @@
+import { AggregateRoot } from '@shared/common/domain/aggregate-root';
+import {
+  <%= modelNameUpperCamelCase%>Id,
+} from './value-object/<%= modelNameSnakeCase %>-id';
+import { <%= modelNameUpperCamelCase%>CreateEvent } from './events/<%= modelNameSnakeCase %>-create.event';
+
+export interface <%= modelNameUpperCamelCase%>Primitive {
+  id: string;
+
+}
+
+export class <%= modelNameUpperCamelCase%> extends AggregateRoot {
+  readonly id: <%= modelNameUpperCamelCase%>Id;
+
+
+  private constructor(
+    id: <%= modelNameUpperCamelCase%>Id,
+
+  ) {
+    super();
+    this.id = id;
+  }
+
+  public static create(
+    id: <%= modelNameUpperCamelCase%>Id,
+
+  ): <%= modelNameUpperCamelCase%> {
+    const <%= modelNameCamelCase %> = new <%= modelNameUpperCamelCase%>(
+      id,
+    );
+
+    <%= modelNameCamelCase %>.record(
+      new <%= modelNameUpperCamelCase%>CreateEvent(
+        <%= modelNameCamelCase %>.id.value,
+      ),
+    );
+    
+    return  <%= modelNameCamelCase %>;
+  }
+
+  
+
+  public toPrimitive(): <%= modelNameUpperCamelCase%>Primitive {
+    return {
+      id: this.id.value,
+    };
+  }
+
+  public static fromEntity(
+    id: string,
+  ):<%= modelNameUpperCamelCase%> {
+    return new <%= modelNameUpperCamelCase%>(
+      new <%= modelNameUpperCamelCase%>Id(id),    
+    );
+  }
+}

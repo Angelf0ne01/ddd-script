@@ -1,0 +1,42 @@
+import { InjectRepository } from '@nestjs/typeorm';
+import { Nulleable } from '@shared/common/domain/base-entity';
+import { Repository } from 'typeorm';
+import { <%= modelNameUpperCamelCase%> } from '../domain/<%= modelNameSnakeCase %>';
+import { <%= modelNameUpperCamelCase%>Repository } from '../domain/<%= modelNameSnakeCase %>.repository';
+import { <%= modelNameUpperCamelCase%>Id } from '../domain/value-object';
+import { <%= modelNameUpperCamelCase%>Entity } from './model/<%= modelNameSnakeCase %>-entity-typeorm.entity';
+
+export class <%= modelNameUpperCamelCase%>RepositoryInTypeOrm implements <%= modelNameUpperCamelCase%>Repository {
+  constructor(
+    @InjectRepository(<%= modelNameUpperCamelCase%>Entity)
+    private repository: Repository<<%= modelNameUpperCamelCase%>Entity>,
+  ) {}
+
+  public async save(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void> {
+    const model = this.repository.create(<%= modelNameCamelCase %>.toPrimitive());
+    await this.repository.save(model);
+  }
+
+  public async findOneById(<%= modelNameCamelCase %>Id: <%= modelNameUpperCamelCase%>Id): Promise<Nulleable<<%= modelNameUpperCamelCase%>>> {
+    const <%= modelNameCamelCase %>Entity = await this.repository.findOne({
+      where: { id: <%= modelNameCamelCase %>Id.value },
+    });
+
+    if (!<%= modelNameCamelCase %>Entity) {
+      return undefined;
+    }
+
+    return this.convertEntityToValueObject(<%= modelNameCamelCase %>Entity);
+  }
+
+  public async delete(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void> {
+    const model = this.repository.create(<%= modelNameCamelCase %>.toPrimitive());
+    await this.repository.softRemove(model);
+  }
+
+  private convertEntityToValueObject(<%= modelNameCamelCase %>Entity: <%= modelNameUpperCamelCase%>Entity): <%= modelNameUpperCamelCase%> {
+    return <%= modelNameUpperCamelCase%>.fromEntity(
+      <%= modelNameCamelCase %>Entity.id,
+    );
+  }
+}

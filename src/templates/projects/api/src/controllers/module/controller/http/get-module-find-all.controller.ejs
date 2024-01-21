@@ -1,0 +1,51 @@
+import { Controller, Get } from '@nestjs/common';
+import {
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { <%= modelNameUpperCamelCase %>FindAllService } from '@shared/entities/<%= modelNameSnakeCase %>/application/<%= modelNameSnakeCase %>-find-all.service';
+import {
+  <%= modelNameUpperCamelCase %>ApiResponse,
+  <%= modelNameUpperCamelCase %>ListApiResponse,
+  <%= modelNameUpperSnakeCase %>_ERROR_MAPPER,
+} from '../<%= modelNameSnakeCase %>.dto';
+
+@ApiTags('<%= modelNameSnakeCase %>')
+@Controller('/<%= modelNameSnakeCase %>')
+export class Get<%= modelNameUpperCamelCase %>FindAllController {
+  constructor(
+    private readonly <%= modelNameCamelCase %>FindAllService: <%= modelNameUpperCamelCase %>FindAllService,
+  ) {}
+
+  @Get()
+  @ApiOkResponse({
+    description: 'get list of <%= modelNameSnakeCase %>',
+    type: <%= modelNameUpperCamelCase %>ApiResponse,
+  })
+  @ApiNotFoundResponse({
+    description: <%= modelNameUpperSnakeCase %>_ERROR_MAPPER.NOT_FOUND,
+    schema: {
+      type: 'object',
+      example: {
+        data: undefined,
+        error: <%= modelNameUpperSnakeCase %>_ERROR_MAPPER.NOT_FOUND,
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    description: <%= modelNameUpperSnakeCase %>_ERROR_MAPPER.INTERNAL_SERVER_ERROR,
+    schema: {
+      type: 'object',
+      example: {
+        data: undefined,
+        error: <%= modelNameUpperSnakeCase %>_ERROR_MAPPER.INTERNAL_SERVER_ERROR,
+      },
+    },
+  })
+  public async <%= modelNameCamelCase %>FindAll(): Promise<<%= modelNameUpperCamelCase %>ListApiResponse> {
+    const <%= modelNameCamelCase %> = await this.<%= modelNameCamelCase %>FindAllService.run();
+    return { data: <%= modelNameCamelCase %> };
+  }
+}

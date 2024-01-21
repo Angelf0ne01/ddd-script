@@ -1,0 +1,28 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { EventBus } from '@shared/clients/rabbitmq/event-bus';
+import { TemplateId } from '@shared/entities/templates/domain/value-object/template-id';
+import { <%= modelNameUpperCamelCase%> } from '../domain/<%= modelNameSnakeCase %>';
+import { <%= modelNameUpperCamelCase%>Repository } from '../domain/<%= modelNameSnakeCase %>.repository';
+import { <%= modelNameUpperCamelCase%>Id, <%= modelNameUpperCamelCase%>UserId, <%= modelNameUpperCamelCase%>UserName } from '../domain/value-object';
+import { <%= modelNameUpperCamelCase%>Body } from '../domain/value-object/<%= modelNameSnakeCase %>-body';
+import { <%= modelNameUpperCamelCase%>To } from '../domain/value-object/<%= modelNameSnakeCase %>-to';
+
+@Injectable()
+// eslint-disable-next-line @darraghor/nestjs-typed/injectable-should-be-provided
+export class <%= modelNameUpperCamelCase%>CreateService {
+  constructor(
+    @Inject('repository') private repository: <%= modelNameUpperCamelCase%>Repository,
+    @Inject('event-bus') private eventBus: EventBus,
+  ) {}
+
+  public async run(
+    id: string,
+  ): Promise<void> {
+    const <%= modelNameCamelCase %> = <%= modelNameUpperCamelCase%>.create(
+      new <%= modelNameUpperCamelCase%>Id(id),
+    );
+
+    await this.repository.save(<%= modelNameCamelCase %>);
+    this.eventBus.publishs(<%= modelNameCamelCase %>.pullDomainEvents());
+  }
+}

@@ -1,0 +1,9 @@
+import { BaseEntityTypeOrm } from '@shared/common/infraestructure/model/base-entity-typeorm';
+import { Entity, Column } from 'typeorm';
+import { EmailStatusType } from '../../domain/value-object/email-status';
+
+@Entity({
+  name: '<%=modelNameSnakeLowerCase%>s',
+})
+export class <%= modelNameUpperCamelCase%>Entity extends BaseEntityTypeOrm {
+}

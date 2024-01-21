@@ -1,0 +1,67 @@
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+} from "@nestjs/common";
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiTags,
+} from "@nestjs/swagger";
+import { InvalidArgumentError } from "@shared/common/domain/value-object";
+import { <%= modelNameUpperCamelCase%>CreateService } from "@shared/entities/<%= modelNameSnakeCase %>/application/<%= modelNameSnakeCase %>-create.service";
+import {
+  Create<%= modelNameUpperCamelCase%>DTO,
+  <%= modelNameUpperSnakeCase%>_ERROR_MAPPER,
+} from "@api/controllers/<%= modelNameSnakeCase %>/controller/<%= modelNameSnakeCase %>.dto";
+
+
+@ApiTags("<%= modelNameSnakeCase %>")
+@Controller("<%= modelNameSnakeCase %>")
+export class PostCreate<%= modelNameUpperCamelCase%>Controller {
+  constructor(private readonly <%= modelNameCamelCase %>CreateService: <%= modelNameUpperCamelCase%>CreateService) {}
+
+  @Post()
+  @ApiCreatedResponse({
+    description: "create an <%= modelNameSnakeCase %>",
+    status: 201,
+  })
+  @ApiBadRequestResponse({
+    description: <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.BAD_REQUEST,
+    schema: {
+      type: "object",
+      example: {
+        data: undefined,
+        error: <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.BAD_REQUEST,
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    description: <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.INTERNAL_SERVER_ERROR,
+    schema: {
+      type: "object",
+      example: {
+        data: undefined,
+        error: <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.INTERNAL_SERVER_ERROR,
+      },
+    },
+  })
+  public async create<%= modelNameUpperCamelCase%>(@Body() <%= modelNameSnakeCase %>: Create<%= modelNameUpperCamelCase%>DTO): Promise<void> {
+    try {
+      const {} = <%= modelNameSnakeCase %>;
+
+      await this.<%= modelNameCamelCase %>CreateService.run();
+    } catch (error) {
+      if (error instanceof InvalidArgumentError) {
+        throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+      throw new HttpException(
+        <%= modelNameUpperSnakeCase%>_ERROR_MAPPER.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+}
