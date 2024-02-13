@@ -1,0 +1,33 @@
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { InvalidArgumentError } from '@shared/entities/common/domain/value-object';
+import { <%= modelNameUpperCamelCase %>DeleteByIdService } from '@shared/entities/<%= modelNameSnakeCase %>/application/<%= modelNameSnakeCase %>-delete-by-id.service';
+import { <%= modelNameUpperCamelCase %>NotExist } from '@shared/entities/<%= modelNameSnakeCase %>/domain/exceptions/<%= modelNameSnakeCase %>-not-exit';
+import { GraphQLError } from 'graphql';
+import { <%= modelNameUpperSnakeCase %>_ERROR_MAPPER } from '../<%= modelNameSnakeCase %>.dto';
+
+@Resolver(() => Boolean)
+export class MutationDelete<%= modelNameUpperCamelCase %>Resolver {
+  constructor(
+    private readonly <%= modelNameSnakeCase %>DeleteByIdService: <%= modelNameUpperCamelCase %>DeleteByIdService,
+  ) {}
+
+  @Mutation(() => Boolean)
+  async delete<%= modelNameUpperCamelCase %>(
+    @Args('<%= modelNameSnakeCase %>Id') <%= modelNameSnakeCase %>Id: string,
+  ): Promise<boolean> {
+    try {
+      await this.<%= modelNameSnakeCase %>DeleteByIdService.run(<%= modelNameSnakeCase %>Id);
+      return true;
+    } catch (error) {
+      if (error instanceof InvalidArgumentError) {
+        throw new GraphQLError(error.message);
+      }
+
+      if (error instanceof <%= modelNameUpperCamelCase %>NotExist) {
+        throw new GraphQLError(error.message);
+      }
+
+      throw new GraphQLError(<%= modelNameUpperSnakeCase %>_ERROR_MAPPER.NOT_FOUND);
+    }
+  }
+}

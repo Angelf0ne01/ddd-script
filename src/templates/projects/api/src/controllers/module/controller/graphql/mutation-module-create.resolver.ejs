@@ -1,0 +1,32 @@
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { InvalidArgumentError } from '@shared/entities/common/domain/value-object';
+import { <%= modelNameUpperCamelCase %>CreateService } from '@shared/entities/<%= modelNameSnakeCase %>/application/<%= modelNameSnakeCase %>-create.service';
+import { GraphQLError } from 'graphql';
+import {
+    <%= modelNameUpperSnakeCase %>_ERROR_MAPPER,
+  Create<%= modelNameUpperCamelCase %>DTO,
+} from '../<%= modelNameSnakeCase %>.dto';
+
+@Resolver(() => Boolean)
+export class Mutation<%= modelNameUpperCamelCase %>Resolver {
+  constructor(
+    private readonly <%= modelNameSnakeCase %>CreateService: <%= modelNameUpperCamelCase %>CreateService,
+  ) {}
+
+  @Mutation(() => Boolean)
+  async create<%= modelNameUpperCamelCase %>(
+    @Args('<%= modelNameSnakeCase %>') <%= modelNameSnakeCase %>: Create<%= modelNameUpperCamelCase %>DTO,
+  ): Promise<boolean> {
+    try {
+      const id = <%= modelNameSnakeCase %>.id;
+      await this.<%= modelNameSnakeCase %>CreateService.run(id);
+      return true;
+    } catch (error) {
+      if (error instanceof InvalidArgumentError) {
+        throw new GraphQLError(error.message);
+      }
+
+      throw new GraphQLError(<%= modelNameUpperSnakeCase %>_ERROR_MAPPER.NOT_FOUND);
+    }
+  }
+}

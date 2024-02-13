@@ -12,11 +12,13 @@ export class <%= modelNameUpperCamelCase%>RepositoryInTypeOrm implements <%= mod
     private repository: Repository<<%= modelNameUpperCamelCase%>Entity>,
   ) {}
 
+  <% if (create) { %>
   public async save(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void> {
     const model = this.repository.create(<%= modelNameCamelCase %>.toPrimitive());
     await this.repository.save(model);
   }
-
+  <% } %>
+  <% if (findOne) { %>
   public async findOneById(<%= modelNameCamelCase %>Id: <%= modelNameUpperCamelCase%>Id): Promise<Nulleable<<%= modelNameUpperCamelCase%>>> {
     const <%= modelNameCamelCase %>Entity = await this.repository.findOne({
       where: { id: <%= modelNameCamelCase %>Id.value },
@@ -28,11 +30,29 @@ export class <%= modelNameUpperCamelCase%>RepositoryInTypeOrm implements <%= mod
 
     return this.convertEntityToValueObject(<%= modelNameCamelCase %>Entity);
   }
+  <% } %>
 
+  <% if (findAll) { %>
+  public async findAll(): Promise<<%= modelNameUpperCamelCase%>[]> {
+    const <%= modelNameCamelCase %>Entities = await this.repository.find();
+
+    return <%= modelNameCamelCase %>Entities.map((<%= modelNameCamelCase %>Entity)=> this.convertEntityToValueObject(<%= modelNameCamelCase %>Entity));
+  }
+  <% } %>
+
+  <% if (update) { %>
+  public async update(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void> {
+    const model = this.repository.create(<%= modelNameCamelCase %>.toPrimitive());
+    await this.repository.save(model);
+  }
+  <% } %>
+
+  <% if (deleted) { %>
   public async delete(<%= modelNameCamelCase %>: <%= modelNameUpperCamelCase%>): Promise<void> {
     const model = this.repository.create(<%= modelNameCamelCase %>.toPrimitive());
     await this.repository.softRemove(model);
   }
+  <% } %>
 
   private convertEntityToValueObject(<%= modelNameCamelCase %>Entity: <%= modelNameUpperCamelCase%>Entity): <%= modelNameUpperCamelCase%> {
     return <%= modelNameUpperCamelCase%>.fromEntity(

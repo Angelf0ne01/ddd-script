@@ -62,6 +62,7 @@ export class <%= modelNameUpperCamelCase%>ListApiResponse extends BaseDTO<<%= mo
   error?: string;
 }
 
+<% if (create) { %>
 @InputType()
 export class Create<%= modelNameUpperCamelCase%>DTO {
   @Field(() => ID)
@@ -70,3 +71,4 @@ export class Create<%= modelNameUpperCamelCase%>DTO {
   id!: string;
 
 }
+<% } %>
