@@ -24,6 +24,9 @@ jobs:
     - name: Instalar dependencias
       run: yarn
 
+    - name: Build
+      run: yarn build
+
     - name: Configurar .npmrc
       run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
 
