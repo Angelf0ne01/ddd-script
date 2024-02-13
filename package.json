@@ -1,14 +1,15 @@
 {
   "name": "ddd-script",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "",
   "type": "module",
   "main": "./dist/cli.js",
   "scripts": {
-    "dev": "npm run build && npm run copy-templates && npm run start ",
+    "dev": "npm run build && npm run start ",
     "start": "node ./dist/cli.js",
     "copy-templates": "ncp src/templates dist/templates",
-    "build": "tsc",
+    "typescript": "tsc",
+    "build":"npm run typescript && npm run copy-templates",
     "check": "npm-check -u"
   },
   "bin": {

@@ -18,18 +18,15 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Instalar yarn
-      run: npm install -g yarn
-
     - name: Instalar dependencias
-      run: yarn
+      run: npm install
 
     - name: Build
-      run: yarn build
+      run: npm run build
 
     - name: Configurar .npmrc
       run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
 
 
     - name: Publicar en npm
-      run: yarn publish
+      run: npm publish
