@@ -202,7 +202,7 @@ function createTemplate(
       findOne: useCases.includes("find-one"),
       findAll: useCases.includes("find-all"),
       update: useCases.includes("update"),
-      deleted: useCases.includes("deleted"),
+      deleted: useCases.includes("delete"),
     };
 
     const renderedContent = ejs.render(templateContent, params);
